@@ -1,0 +1,44 @@
+name: Fork Sync (Rebase)
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  sync-fork:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # Checkout your fork WITHOUT persisting GITHUB_TOKEN credentials
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Add upstream remote & fetch
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/keiyoushi/extensions-source.git
+          git fetch upstream
+
+      # Rebase your commits on top of upstream/main (keeps your ahead commits)
+      - name: Rebase main onto upstream/main
+        run: |
+          git checkout main
+          git pull --rebase upstream main
+
+      # Remove GitHub App default credentials so PAT is used correctly
+      - name: Clear GITHUB_TOKEN credentials
+        run: |
+          git config --global --unset-all http.https://github.com/.extraheader || true
+
+      # Push rebased branch back to your fork using PAT
+      - name: Push rebased main
+        env:
+          TOKEN: ${{ secrets.FORK_SYNC_BOT_TOKEN }}
+        run: |
+          git push --force-with-lease https://x-access-token:${TOKEN}@github.com/HugoFMiranda/extensions-source.git main
