@@ -24,6 +24,12 @@ jobs:
         run: |
           git remote add upstream https://github.com/keiyoushi/extensions-source.git
           git fetch upstream
+          
+      # Configure identity so rebase can rewrite commits
+      - name: Configure Git identity
+        run: |
+          git config user.name "HugoFMiranda"
+          git config user.email "hugoeu10@gmail.com"
 
       # Rebase your commits on top of upstream/main (keeps your ahead commits)
       - name: Rebase main onto upstream/main
