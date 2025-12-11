@@ -47,4 +47,4 @@ jobs:
         env:
           TOKEN: ${{ secrets.FORK_SYNC_BOT_TOKEN }}
         run: |
-          git push --force-with-lease https://x-access-token:${TOKEN}@github.com/HugoFMiranda/extensions-source.git main
+          git push --force https://x-access-token:${TOKEN}@github.com/HugoFMiranda/extensions-source.git main
